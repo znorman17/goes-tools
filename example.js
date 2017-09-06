@@ -1,6 +1,6 @@
 // get all packages we need
 var moment = require('moment');
-var GT = require('./goes-tools.js')
+var GT = require('./js/goes-tools.js')
 
 //specify our first and second times for searching
 var t1 = GT.extractGoesDate('OR_ABI-L1b-RadC-M3C01_G16_s20172331602189_e20172331604563_c20172331605005.nc');

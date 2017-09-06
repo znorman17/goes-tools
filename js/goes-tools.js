@@ -4,6 +4,7 @@ var moment = require('moment');
 var mkdirp = require('mkdirp');
 var fs = require('fs');
 var Rx = require('rxjs/Rx');
+var ProgressBar = require('progress');
 
 
 //simple function that extracts a moment from the name of a 
@@ -29,9 +30,8 @@ exports.extractGoesDate = function (str) {
   return moment(date.format('YYYY-MM-DD') + 'T' + hmsTime + 'Z');
 } 
 
-
+//simple function to search for GOES data
 exports.searchGOESData = function(t1, t2, product) {
-  
   //specify the product type that we want to download
   product = 'ABI-L1b-RadC'; //CONUS - every 15 minutes
   //product = 'ABI-L1b-RadF'; //FULL DISK - every 5 minutes
@@ -64,6 +64,9 @@ exports.searchGOESData = function(t1, t2, product) {
     n = n + 1;
     useT1.add(1, 'hour')
   }
+
+  //initialize our progress bar
+  var bar = new ProgressBar('  [ :bar ] Approx. time remaining = :eta', { total: n });  
 
   //copy our first time so that we can process correctly
   useT1 = moment(t1);
@@ -106,6 +109,9 @@ exports.searchGOESData = function(t1, t2, product) {
 
           //update our counter
           nDone = nDone + 1;
+
+          //update our progress bar
+          bar.tick();
 
           //check if we have finished
           if (nDone == n) {
