@@ -1,16 +1,33 @@
 // get all packages we need
 var moment = require('moment');
-var GT = require('./js/goes-tools.js')
+var GT = require('./js/goes-tools.js');
 
-//specify our first and second times for searching
-var t1 = GT.extractGoesDate('OR_ABI-L1b-RadC-M3C01_G16_s20172331602189_e20172331604563_c20172331605005.nc');
-var t2 = moment(t1).add(1, 'day');
+// create search parameters
+var params = new GT.GOESSearchParams;
 
-//specify the product that we want to access
-var product = 'ABI-L1b-RadC';
+//specify our search parameters
+params.t1 = moment('2017-08-21 10:00:00');  // time 1 - for the time zone that you are currently in
+params.t2 = moment('2017-08-21 14:00:00');  // time 2 - for the time zone that you are currently in
+params.product = 'ABI-L1b-RadC';            // product
+params.bands = ['C01'];                     // the name of each band you want to search for
 
 //search and subscribe to async call
-console.log('Querying S3 for GOES scenes...');
-GT.searchGOESData(t1, t2, product).subscribe((res) => {
-  console.log(res.length);
+console.log('Querying avaiable GOES scenes...');
+console.log('');
+GT.searchGOESData(params).subscribe((res) => {
+  console.log('');
+  if (res.length !== 0) {
+    console.log('Attempting to download ' + res.length + ' GOES scene(s)...');
+    console.log('');
+    GT.downloadGOESData(res).subscribe( (outFiles) =>{
+      console.log('');
+      console.log('Files downloaded : ');
+      //print the downloaded files to the screen
+      outFiles.forEach( (file) => {
+        console.log(file);
+      });
+    });
+  } else {
+    console.log('No search results found!');
+  };
 });
