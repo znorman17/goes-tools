@@ -1,0 +1,19 @@
+{
+  "name": "goes-tools",
+  "version": "1.0.0",
+  "description": "Simple JS helper tools that will query and download GOES-16 data between two dates using the AWS JS SDK.",
+  "main": "get-goes.js",
+  "dependencies": {
+    "aws-sdk": "^2.109.0",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.18.1",
+    "rxjs": "^5.4.3",
+    "s3-download": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Zachary Norman - Github: znorman17",
+  "license": "MIT"
+}
