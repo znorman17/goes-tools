@@ -9,7 +9,7 @@ To install just run ```nmp install``` from a command prompt or terminal in this 
 
 ```
 cd thisDirectory
-npm installing
+npm install
 ```
 
 
