@@ -76,7 +76,7 @@ exports.searchGOESData = function(searchParams) {
   var s3 = new AWS.S3();
 
   // Create a bucket and upload something into it
-  var maxKeys = 100;
+  var maxKeys = 150;
 
   //init array to contain all of our results
   var resArr = [];
