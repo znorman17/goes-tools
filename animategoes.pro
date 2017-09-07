@@ -37,7 +37,7 @@ pro animateGoes
     time = data['time_coverage_start', '_DATA']
 
     ;get the radiance data for our file. Flip about Y axis because of the standards for remote sensing
-    radiance = rotate(data['Rad','_DATA'],7)
+    radiance = data['Rad','_DATA']
 
     ;if the first image, then we need to create the image and set up our map grid
     if (i eq 0) then begin
@@ -61,7 +61,7 @@ pro animateGoes
         MAP_PROJECTION = 'GOES-R', GRID_UNITS = 'meters', $
         CENTER_LONGITUDE = center_lon, $
         DIMENSIONS = [500,300], $
-        TITLE = 'GOES-16 Level 1b Radiance: ' + time, /ORDER)
+        TITLE = 'GOES-16 Level 1b Radiance: ' + time)
       
       ;customize our grid and add the countries and US vectors
       mg = img.MapGrid
