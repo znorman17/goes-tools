@@ -40,7 +40,25 @@ See example.js for a complete example which you can run with
 node example.js
 ```
 
+## Directory Structure
 
+To make the downloaded results more human-readable, the directory structure of anything that is downloaded will be of the form:
+
+```
+./s3/noaa-goes16/YYYY-MM-DD/hh/mm-ss.S
+```
+
+Where each letter after `./s3/noaa-goes16` represents:
+
+- `Y` represents a four digit year
+- `M` represents the two digit month of the year
+- `D` is the two digit day of the month
+- `h` is the UTC hour that the collection started
+- `m` is the UTC minute that the collection started
+- `s` is the UTC second that the collection started
+- `S` is the UTC tenth of the second that the collection started 
+
+This data structure was chosen so that you could more easily navigate any downloaded data and it also arranges the collections by the 16 bands that were collected. This way you don't have to worry about separating the original files into the separate collection start times.
 
 ## Installation
 

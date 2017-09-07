@@ -62,6 +62,11 @@ exports.searchGOESData = function(searchParams) {
   var bands = searchParams.bands;
   var product = searchParams.product;
 
+  //validate times
+  if (t2.isBefore(t1)) {
+    throw 'Second search time is before first, cannot search.'
+  }
+
   //make sure we have bands
   if (bands.length == 0) {
     throw 'No GOES bands passed as input. Should be of the form "C01", "C02", ... "C16"'
@@ -100,10 +105,15 @@ exports.searchGOESData = function(searchParams) {
 
   //use an observable to determine when we are done
   return Rx.Observable.fromPromise( new Promise( resolve => {
+    //error catch just in case there is a problem
+    if (n == 0) {
+      resolve(resArr);
+    }
+
     //query all s3 buckets for band
     while (t2.isAfter(useT1)) {
       //get UTC time which is what GOES is collected using
-      var utc = useT1.utc()
+      var utc = useT1.utc();
 
       //loop over each band and query for each specific file
       bands.forEach( (band) => {
@@ -119,17 +129,14 @@ exports.searchGOESData = function(searchParams) {
         s3.listObjectsV2(s3params, (err, data) => {
           if (err) {
             throw err
-            //console.log(err, err.stack); // an error occurred
           } else {
-            //console.log(data.Contents)
             data.Contents.forEach( (bucketObject) => {
               //get the date of the scene
               var sceneDate = exports.extractGOESDate(bucketObject.Key);
 
               //check if the date is within our acceptable times
               if (sceneDate.isAfter(t1) && sceneDate.isBefore(t2) ){
-                // console.log(bucketObject);
-                resArr.push(bucketObject);
+                resArr.push({s3Obj:bucketObject, time:sceneDate});
               };
             });
 
@@ -175,6 +182,7 @@ exports.downloadGOESData = function (searchResults) {
 
   //init counter for when we are finished
   var nDone = 0;
+  var nFail = 0;
 
   //initialize our progress bar
   var bar = new ProgressBar('  [ :bar ] Approx. time remaining = :eta (s)', { total: searchResults.length, width: 20});    
@@ -182,7 +190,10 @@ exports.downloadGOESData = function (searchResults) {
   //use an observable to determine when we are done
   return Rx.Observable.fromPromise( new Promise( resolve => {
     //loop over our array of objects
-    searchResults.forEach( (bucketObject) => {
+    searchResults.forEach( (result) => {
+      //extract bucketObject
+      var bucketObject = result.s3Obj;
+
       //split the S3 key to get the name and directory
       var split = bucketObject.Key.split('/');
       var fileName = split[split.length-1];
@@ -202,13 +213,17 @@ exports.downloadGOESData = function (searchResults) {
       };
 
       //build the directory we want to download to
-      outdir = './s3/' + bucketName + '/' + fileDir;
+      var utc = result.time.utc();
+      var outdir = './s3/' + bucketName + '/' + utc.format('YYYY-MM-DD') + '/' + utc.format('hh') + '/' + utc.format('mm-ss.S');
       if (!fs.existsSync(outdir)){
         mkdirp.sync(outdir);
       };
 
       //make sure that our output file does not exist already
       outFile = outdir + '/' + fileName;
+
+      //save our file that we are saving to disk
+      outFiles.push(outFile);
 
       //create a downloader object to get the files we found
       var d = downloader.download(params, sessionParams);
@@ -220,8 +235,12 @@ exports.downloadGOESData = function (searchResults) {
         //increment progress
         bar.tick();
         
+        //remove the file we just from our list of successes
+        outFiles.splice(nDone - nFail, 1);
+
         //update our counter
         nDone = nDone + 1;
+        nFail = nFail + 1;
 
         //check if we have finished
         if (nDone == searchResults.length) {
@@ -237,9 +256,6 @@ exports.downloadGOESData = function (searchResults) {
 
         //update our counter
         nDone = nDone + 1;
-
-        //save our file
-        outFiles.push(outFile);
 
         //check if we have finished
         if (nDone == searchResults.length) {
@@ -261,9 +277,6 @@ exports.downloadGOESData = function (searchResults) {
 
         //update our counter
         nDone = nDone + 1;
-        
-        //save our file even though we didnt download bc it is on disk
-        outFiles.push(outFile);
         
         //check if we have finished
         if (nDone == searchResults.length) {
