@@ -83,14 +83,14 @@ exports.searchGOESData = function(searchParams) {
   var n = 0;
   while (t2.isAfter(useT1)) {
     n = n + 1;
-    useT1.add(1, 'hour')
+    useT1.add(1, 'hour');
   }
 
   //increment total by the number of bands we want to search for
   n = n*bands.length;
 
   //initialize our progress bar
-  var bar = new ProgressBar('  [ :bar ] Approx. time remaining = :eta (s)', { total: n + 1, width: 20});  
+  var bar = new ProgressBar('  [ :bar ] Approx. time remaining = :eta (s)', { total: n , width: 20});  
 
   //copy our first time so that we can process correctly
   useT1 = moment(t1);
@@ -141,6 +141,7 @@ exports.searchGOESData = function(searchParams) {
 
             //check if we have finished
             if (nDone == n) {
+              bar.finish = true;              
               resolve(resArr);
             };
           };
@@ -176,7 +177,7 @@ exports.downloadGOESData = function (searchResults) {
   var nDone = 0;
 
   //initialize our progress bar
-  var bar = new ProgressBar('  [ :bar ] Approx. time remaining = :eta (s)', { total: searchResults.length + 1, width: 20});    
+  var bar = new ProgressBar('  [ :bar ] Approx. time remaining = :eta (s)', { total: searchResults.length, width: 20});    
 
   //use an observable to determine when we are done
   return Rx.Observable.fromPromise( new Promise( resolve => {
@@ -224,6 +225,7 @@ exports.downloadGOESData = function (searchResults) {
 
         //check if we have finished
         if (nDone == searchResults.length) {
+          bar.complete = true;
           resolve(outFiles);
         };
       });
@@ -241,6 +243,7 @@ exports.downloadGOESData = function (searchResults) {
 
         //check if we have finished
         if (nDone == searchResults.length) {
+          bar.complete = true;          
           resolve(outFiles);
         };
       });
@@ -264,6 +267,7 @@ exports.downloadGOESData = function (searchResults) {
         
         //check if we have finished
         if (nDone == searchResults.length) {
+          bar.complete = true;          
           resolve(outFiles);
         };
       };
