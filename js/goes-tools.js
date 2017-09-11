@@ -45,7 +45,7 @@ exports.extractGOESDate = function (str) {
   var date = moment(yearStr.substr(0,4), 'YYYY').add(yearStr.substr(4,3)-1, 'day');
 
   //make total moment by making the ISO string
-  return moment(date.format('YYYY-MM-DD') + 'T' + hmsTime + 'Z');
+  return moment.utc(date.format('YYYY-MM-DD') + 'T' + hmsTime + 'Z');
 } 
 
 
@@ -213,8 +213,8 @@ exports.downloadGOESData = function (searchResults) {
       };
 
       //build the directory we want to download to
-      var utc = result.time.utc();
-      var outdir = './s3/' + bucketName + '/' + utc.format('YYYY-MM-DD') + '/' + utc.format('hh') + '/' + utc.format('mm-ss.S');
+      var utc = result.time;
+      var outdir = './s3/' + bucketName + '/' + utc.format('YYYY-MM-DD') + '/' + String(utc.hour()+1) + '/' + utc.format('mm-ss.S');
       if (!fs.existsSync(outdir)){
         mkdirp.sync(outdir);
       };

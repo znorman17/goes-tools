@@ -40,6 +40,16 @@ See example.js for a complete example which you can run with
 node example.js
 ```
 
+### Specifying time in UTC
+
+To specify time in UTC just use the following syntax when creating the moments:
+
+```javascript
+params.t1 = moment.utc('2017-08-21 10:00:00');  // time 1 - UTC
+params.t2 = moment.utc('2017-08-21 14:00:00');  // time 2 - UTC
+```
+
+
 ## Directory Structure
 
 To make the downloaded results more human-readable, the directory structure of anything that is downloaded will be of the form:
@@ -86,6 +96,18 @@ Once you download the data, you can use the provided IDL PRO code to create an a
 
 You will need to modify the directory that IDL searches for data as it is hard coded for the current dates in example.js.
 
+Here is an example of how you can call the IDL code:
+
+```idl
+;specify our output file
+outFile = someDir + path_sep() + 'goes-animation2.mp4'
+
+;specify the channels that we want to search for
+channels = ['C01']
+
+;animate the CONUS GOES data that was downloaded
+animateGOES, channels, outFile, /OVERWRITE
+```
 
 ## License 
 
