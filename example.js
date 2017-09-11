@@ -10,8 +10,8 @@ params.t1 = moment('2017-08-21 16:00:00');  // time 1 - for the time zone that y
 params.t2 = moment('2017-08-21 20:00:00');  // time 2 - for the time zone that you are currently in
 params.product = 'ABI-L1b-RadC';            // product
 
-//specify the band youw ant to search for
-// params.bands = ['C01','C02','C03','C04','C05','C06','C07','C08','C09','C10','C11','C12','C13', 'C14', 'C15', 'C16'];                     // the name of each band you want to search for
+//specify the band you want to search for
+// should be one of : 'C01','C02','C03','C04','C05','C06','C07','C08','C09','C10','C11','C12','C13', 'C14', 'C15', 'C16'                     // the name of each band you want to search for
 params.bands = ['C01'];                     
 
 //search and subscribe to async call
@@ -25,9 +25,13 @@ GT.searchGOESData(params).subscribe((res) => {
       outFiles.forEach( (file) => {
         console.log('  ' + file);
       });
+    }, (err) => {
+      throw err;
     });
   } else {
     console.log('');    
     console.log('No search results found!');
   };
+}, (err) => {
+  throw err;
 });
